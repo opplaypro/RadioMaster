@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nazwa aplikacji -->
+    <string name="app_name">RadioMaster</string>
+    <string name="app_short_name">RadioMaster</string>
+    <string name="tagline">Twoje radio ze świata</string>
+
+    <!-- Podstawowe etykiety nawigacji -->
+    <string name="nav_home">Strona główna</string>
+    <string name="nav_search">Szukaj</string>
+    <string name="nav_favorites">Ulubione</string>
+    <string name="nav_recent">Ostatnie</string>
+    <string name="nav_settings">Ustawienia</string>
+
+    <!-- Ekran startowy / Onboarding -->
+    <string name="onboarding_title">Odkrywaj radio ze świata</string>
+    <string name="onboarding_subtitle">Znajdź dowolną stację radiową i słuchaj jej w dowolnym miejscu &#8211; także w aucie z Android Auto.</string>
+    <string name="onboarding_find_title">Szukaj stacji z całego świata</string>
+    <string name="onboarding_find_desc">Wyszukuj po nazwie, kraju, języku lub gatunku muzycznym.</string>
+    <string name="onboarding_listen_title">Słuchaj w wysokiej jakości</string>
+    <string name="onboarding_listen_desc">Strumieniowe odtwarzanie radiowych stacji internetowych w tle.</string>
+    <string name="onboarding_favorite_title">Twoje ulubione stacje</string>
+    <string name="onboarding_favorite_desc">Dodawaj stacje do ulubionych i wracaj do nich jednym kliknięciem.</string>
+    <string name="onboarding_auto_title">Android Auto w Twoim samochodzie</string>
+    <string name="onboarding_auto_desc">Przeglądaj i odtwarzaj stacje bezpośrednio z panelu samochodowego.</string>
+    <string name="onboarding_start">Rozpocznij</string>
+    <string name="onboarding_next">Dalej</string>
+    <string name="onboarding_skip">Pomiń</string>
+    <string name="onboarding_done">Zakończ</string>
+
+    <!-- Ekran główny -->
+    <string name="home_header_title">Wszystkie stacje</string>
+    <string name="home_header_subtitle">Znajdź swoją stację i zacznij słuchać</string>
+    <string name="home_featured">Polecane</string>
+    <string name="home_categories">Kategorie</string>
+    <string name="home_recent">Ostatnio odtwarzane</string>
+    <string name="home_empty_recent">Nie odtwarzałeś jeszcze żadnej stacji.</string>
+    <string name="home_empty_favorites">Brak ulubionych stacji. Dodaj pierwsze z ekranu wyszukiwania.</string>
+    <string name="home_see_all">Zobacz wszystko</string>
+    <string name="home_stations_count">%d stacji</string>
+
+    <!-- Wyszukiwanie -->
+    <string name="search_hint">Szukaj stacji, kraju lub gatunku</string>
+    <string name="search_empty">Nie znaleziono stacji pasujących do zapytania</string>
+    <string name="search_no_results_title">Brak wyników</string>
+    <string name="search_no_results_desc">Spróbuj wpisać inną nazwę stacji, kraj lub gatunek.</string>
+    <string name="search_results">Znaleziono stacje</string>
+    <string name="search_filter">Filtruj</string>
+    <string name="search_clear">Wyczyść</string>
+
+    <!-- Stacja / odtwarzacz -->
+    <string name="station_detail_title">Stacja</string>
+    <string name="station_country">Kraj</string>
+    <string name="station_language">Język</string>
+    <string name="station_codec">Codec</string>
+    <string name="station_bitrate">Bitrate</string>
+    <string name="station_tags">Tagi</string>
+    <string name="station_homepage">Strona stacji</string>
+    <string name="station_play">Odtwórz</string>
+    <string name="station_pause">Wstrzymaj</string>
+    <string name="station_add_favorite">Dodaj do ulubionych</string>
+    <string name="station_remove_favorite">Usuń z ulubionych</string>
+    <string name="station_share">Udostępnij</string>
+    <string name="station_share_text">Posłuchaj stacji %1$s w aplikacji RadioMaster! %2$s</string>
+    <string name="station_now_playing">Teraz odtwarzane</string>
+    <string name="player_connecting">Łączenie…</string>
+    <string name="player_buffering">Buforowanie…</string>
+    <string name="player_ready">Gotowe do odtwarzania</string>
+    <string name="player_error">Błąd odtwarzania strumienia</string>
+    <string name="player_station_unavailable">Strumień tej stacji jest niedostępny</string>
+    <string name="content_desc_play">Odtwórz</string>
+    <string name="content_desc_pause">Wstrzymaj</string>
+    <string name="content_desc_favorite">Dodaj do ulubionych</string>
+    <string name="content_desc_unfavorite">Usuń z ulubionych</string>
+    <string name="content_desc_station_card">Karta stacji: %1$s</string>
+    <string name="content_desc_station_image">Logo stacji: %1$s</string>
+
+    <!-- Ulubione -->
+    <string name="favorites_title">Ulubione stacje</string>
+    <string name="favorites_empty_title">Brak ulubionych stacji</string>
+    <string name="favorites_empty_desc">Dodawaj stacje do ulubionych, gwiazdką na karcie stacji lub w odtwarzaczu.</string>
+
+    <!-- Ustawienia -->
+    <string name="settings_title">Ustawienia</string>
+    <string name="settings_section_preferences">Preferencje</string>
+    <string name="settings_language">Język aplikacji</string>
+    <string name="settings_language_summary">Wybierz język interfejsu</string>
+    <string name="settings_theme">Motyw</string>
+    <string name="settings_theme_summary">Wygląd aplikacji</string>
+    <string name="settings_theme_system">Systemowy</string>
+    <string name="settings_theme_light">Jasny</string>
+    <string name="settings_theme_dark">Ciemny</string>
+    <string name="settings_section_app">Aplikacja</string>
+    <string name="settings_about">O aplikacji</string>
+    <string name="settings_about_summary">Wersja, licencje i źródła danych</string>
+    <string name="settings_version">Wersja aplikacji</string>
+    <string name="settings_data_source">Źródło danych o stacjach</string>
+    <string name="settings_data_source_value">radio-browser.info</string>
+    <string name="settings_open_source">Licencje open source</string>
+    <string name="settings_auto">Android Auto</string>
+    <string name="settings_auto_summary">Odtwarzaj stacje z panelu samochodowego</string>
+
+    <!-- Wybór języka -->
+    <string name="language_picker_title">Wybierz język</string>
+    <string name="language_picker_subtitle">Wybierz język, w jakim ma być wyświetlana aplikacja.</string>
+    <string name="language_polish">Polski</string>
+    <string name="language_english">English</string>
+    <string name="language_system">Ustawienia systemu</string>
+
+    <!-- Błędy i sieć -->
+    <string name="error_network">Brak połączenia z siecią</string>
+    <string name="error_tryagain">Spróbuj ponownie</string>
+    <string name="error_unknown">Wystąpił nieznany błąd</string>
+    <string name="error_no_connection">Brak połączenia z internetem. Sprawdź sieć i spróbuj ponownie.</string>
+    <string name="error_station_load">Nie udało się wczytać stacji</string>
+    <string name="msg_no_connection">Brak połączenia z internetem</string>
+
+    <!-- Powiadomienia odtwarzacza -->
+    <string name="channel_name">Odtwarzanie radia</string>
+    <string name="channel_description">Powiadomienie wyświetlane podczas odtwarzania strumienia radiowego w tle.</string>
+    <string name="notification_title">RadioMaster &#8211; odtwarzanie</string>
+    <string name="notification_tap">Kliknij, aby wrócić do odtwarzacza</string>
+    <string name="notification_cancel">Zatrzymaj odtwarzanie</string>
+
+    <!-- Czas -->
+    <string name="minute_abbr">min</string>
+    <string name="just_now">Właśnie teraz</string>
+
+    <!-- Narzędzia / pomoc -->
+    <string name="action_settings">Ustawienia</string>
+    <string name="action_share">Udostępnij</string>
+    <string name="action_search">Szukaj</string>
+    <string name="action_home">Strona główna</string>
+    <string name="label_on">Włączone</string>
+    <string name="label_off">Wyłączone</string>
+</resources>

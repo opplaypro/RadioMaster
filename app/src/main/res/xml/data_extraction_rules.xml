@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup domain="database" path="radiomaster_db">
+        <exclude />
+    </cloud-backup>
+</data-extraction-rules>

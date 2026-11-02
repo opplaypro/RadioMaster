@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Radio Browser API oraz większość strumieni radiowych dostępne są po HTTPS. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">radio-browser.info</domain>
+        <domain includeSubdomains="true">api.radio-browser.info</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+    <!-- Wielu nadawców udostępnia strumienie wyłącznie po HTTP, dlatego w całej
+         aplikacji zezwolono na ruch nieszyfrowany (aplikacja radiowa, strumienie audio). -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
