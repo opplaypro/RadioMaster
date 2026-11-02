@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand / primary -->
+    <color name="radio_primary">#0F3D7A</color>
+    <color name="radio_primary_container">#D7E4F7</color>
+    <color name="radio_secondary">#C98A1C</color>
+    <color name="radio_secondary_container">#FDE8A8</color>
+    <color name="radio_tertiary">#7A3D0F</color>
+
+    <!-- Semantic -->
+    <color name="radio_success">#2E7D32</color>
+    <color name="radio_error">#B3261E</color>
+    <color name="radio_warning">#B26A00</color>
+
+    <!-- Placeholders / misc -->
+    <color name="radio_placeholder_gradient_start">#8E94A1</color>
+    <color name="radio_placeholder_gradient_end">#CBD2D9</color>
+</resources>
