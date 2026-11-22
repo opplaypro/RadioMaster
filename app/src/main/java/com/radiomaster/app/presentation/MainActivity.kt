@@ -1,48 +1,63 @@
 package com.radiomaster.app.presentation
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.hilt.navigation.compose.hiltViewModels
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import com.radiomaster.app.domain.model.Station
-import com.radiomaster.app.domain.repository.AppSettingsRepository
-import com.radiomaster.app.media.RadioPlayerManager
-import com.radiomaster.app.ui.navigation.AppNavGraph
-import com.radiomaster.app.ui.navigation.Routes
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.radiomaster.app.RadioMasterApplication
+import com.radiomaster.app.locale.AppLocale
 
-@AndroidEntryPoint
-class MainActivity : AppLocaleActivity() {
+/**
+ * The only activity: an edge-to-edge Compose host plus the two things that need a window — the
+ * pre-33 locale wrapper and the notification permission that makes the playback controls visible.
+ */
+class MainActivity : ComponentActivity() {
 
-    @Inject lateinit var playerManager: RadioPlayerManager
-    @Inject lateinit var settingsRepository: AppSettingsRepository
+    private var permissionLauncher: ActivityResultLauncher<String>? = null
 
-    private val settingsViewModel by hiltViewModels<SettingsViewModel>()
+    override fun attachBaseContext(newBase: Context) {
+        // No-op from API 33 on, where the framework applies per-app locales itself.
+        super.attachBaseContext(AppLocale.wrap(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Zmiana języka aplikacji wymaga ponownego utworzenia aktywności, aby zasoby (strings) zostały wczytane ponownie.
-        LaunchedEffect(settingsViewModel.localeChangeRequested) {
-            settingsViewModel.localeChangeRequested.collect { locale ->
-                recreate()
-            }
-        }
+        permissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { /* best effort */ }
 
+        val graph = (application as RadioMasterApplication).graph
         setContent {
-            val navController = androidx.navigation.compose.rememberNavController()
-            AppNavGraph(
-                navController = navController,
-                settingsRepository = settingsRepository,
-                onStationSelected = { station: Station ->
-                    playerManager.play(station)
-                    navController.navigate("station/${station.id}")
-                },
-                onLanguageConfirmed = {}
+            AppRoot(
+                graph = graph,
+                onOnboardingFinished = { askForNotificationPermission() },
             )
         }
     }
+
+    override fun onDestroy() {
+        permissionLauncher = null
+        super.onDestroy()
+    }
+
+    /**
+     * Media3 can show its ongoing notification from API 26 without a runtime grant, but from 33 on
+     * a denied permission hides it — which also hides the lock-screen and car controls. Asking once,
+     * right after onboarding, keeps the request where it is explainable.
+     */
+    private fun askForNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        val granted = ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED
+        if (!granted) permissionLauncher?.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
 }

@@ -1,78 +1,62 @@
 # RadioMaster
 
-Aplikacja mobilna na Androida (Jetpack Compose) do wyszukiwania i słuchania stacji radiowych z całego świata, z obsługą **Android Auto** i pełną **wielojęzycznością** (Polski / English, język wybieralny niezależnie od systemu).
+Aplikacja na Androida (Jetpack Compose) do słuchania radia z całego świata: wyszukiwanie stacji w katalogu [radio-browser.info](https://www.radio-browser.info/), odtwarzanie w tle (Media3), ulubione i historia (Room), ekran globu z lokalizacjami nadajników, pełne **Android Auto** (drzewo przeglądania + wyszukiwanie głosowe) oraz **i18n PL/EN** z wyborem języka w aplikacji.
 
-> **Uwaga:** repozytorium zawiera kompletny kod źródłowy oraz dokumentację projektu. Skompilowanie wymaga zainstalowanego Android SDK (Android Studio / wiersz poleceń) — w środowisku nie było dostępnego JDK ani Android SDK, dlatego kompilacja nie została uruchomiona.
+> **Stan weryfikacji.** Cały kod jest napisany pod aktualne wersje bibliotek (tabela poniżej), ale w tym środowisku **nie było JDK, Gradle ani Android SDK**, więc projekt **nie został skompilowany ani uruchomiony**. Spójność sprawdzano skryptem `tools/check_resources.py` (zasoby, importy równoległe, delegaty Compose) oraz przez weryfikację sygnatur Media3 na podstawie `api.txt` taga `1.11.1` i oficjalnej dokumentacji Androida. Pierwsze `./gradlew assembleDebug` nadal pozostaje do wykonania — dopiero ono zweryfikuje sygnatury kompilatorem.
 
 ## Funkcje
 
-- **Wyszukiwanie stacji z całego świata** — po nazwie, kraju, języku lub gatunku (dane z darmowego API [radio-browser.info](https://www.radio-browser.info/)).
-- **Odtwarzanie strumieni radiowe** w tle (Media3 ExoPlayer), z powiadomieniem i sterowaniem z ekranu blokady.
-- **Ulubione stacje** i lista **ostatnio odtwarzanych** (baza lokalna Room).
-- **Ekran szczegółów stacji** — informacje o nadawcy (kraj, język, codec, bitrate, tagi), odtwarzanie/pauza, udostępnianie, otwarcie strony stacji.
-- **Android Auto** — przeglądarka multimediów (MediaSessionService + MediaLibrarySession): popularne stacje, ulubione, wyszukiwarka i odtwarzanie z panelu samochodowego.
-- **Wielojęzyczność (i18n)** — zasoby stringów w języku polskim (domyślny) i angielskim; zmienny język aplikacji bez restartu urządzenia (z recreate aktywności).
-- **Motywy** — jasny, ciemny i systemowy (Material 3, kolory marki).
-- **Onboarding** i ekran powitalny.
+- **Glob (2D)** — canvas z equirektangularną mapą lądów; przesunięcie/zoom wyznacza okrąg (opisany na widoku), w którego promieniu katalog zwraca stacje, tapnięcie dobiera klaster kropek i otwiera ich listę. Dane mapy: `assets/world_land.json` (TopoJSON Natural Earth 110m, generowany przez `tools/generate_world_map.py`), bez uprawnień lokalizacji.
+- **Start** — dwie poziome szyny (Popularne wg `clickcount`, Najwyżej ocenione wg `votes`) + pigułki krajów i gatunków prowadzące na listę stacji.
+- **Wyszukiwanie** — trzy tryby pola (`nazwa` / `tag` / `kraj`), bo katalog nie ma jednego endpointa „wszystko”; debounce 450 ms.
+- **Biblioteka** — ulubione i ostatnio słuchane, zapisywane w Room, obserwowane jako `Flow`.
+- **Odtwarzanie w tle** — wspólny `ExoPlayer`, powiadomienie systemowe Media3, sterowanie z blokady, `WAKE_MODE_NETWORK`, audio focus, pauza przy `AUDIO_BECOMING_NOISY`.
+- **Android Auto** — `MediaLibraryService` z drzewem `root → {ulubione, ostatnie, popularne, top voted, kraje, gatunki, losowe}` i `onSearch` dla wyszukiwania głosowego.
+- **Ustawienia** — motyw (system/jasny/ciemny), język (system/EN/PL), instrukcja Auto, numery wersji.
+- **Onboarding** — trzy ekrany + zgoda na powiadomienia po jego zakończeniu.
 
 ## Architektura
 
 ```
-Clean Architecture + MVVM (jednoaktywnościowy, Navigation Compose)
-
-data   -> remote (Retrofit + radio-browser.info), lokalne (Room: ulubione/ostatnie),
-         DataStore (ustawienia: język, motyw)
-domain -> modele domenowe, interfejsy repozytoriów, case'y użycia
-presentation -> Jetpack Compose (Material 3), Hilt (DI), ViewModel, stany UI
-media   -> ExoPlayer (RadioPlayerManager), serwis foreground (powiadomienie odtwarzania),
-         MediaSessionService + MediaLibrarySession (Android Auto / Automotive)
-```
-
-### Biblioteki kluczowe
-- Jetpack Compose + Material 3, Navigation Compose, Hilt (KSP)
-- Media3 (ExoPlayer, Session)
-- Room, DataStore Preferences
-- Retrofit + Gson + OkHttp
-- Coil (ładowanie obrazów/logo stacji)
-- Timber (logi)
-
-## Android Auto / Android Automotive
-
-Aplikacja deklaruje usługę `RadioSessionService` (medialna przeglądarka, filtr `android.media.browse.MediaBrowserService`) oraz metadanę `com.google.android.gms.car.application` wskazującą `res/xml/automotive_app_desc.xml` (`<uses name="media" />`). W aucie dostępne są: stacje polecane, ulubione i wyszukiwarka, a wybór stacji uruchamia odtwarzanie we wspólnym odtwarzaczu aplikacji.
-
-## Wielojęzyczność
-
-- `res/values/strings.xml` — polski (domyślny)
-- `res/values-pl/strings.xml` — polski
-- `res/values-en/strings.xml` — angielski
-
-Język aplikacji jest nadpisywany na poziomie kontekstu (`LocaleContextWrapper`) i zapisywany w DataStore; zmiana języka w Ustawieniach powoduje `recreate()` aktywności, więc nowe napisy pojawiają się natychmiast.
-
-## Jak uruchomić
-
-1. Zainstaluj Android Studio (lub Android SDK wiersza poleceń) oraz pakiet SDK 35 (`compileSdk = 35`, `minSdk = 24`).
-2. Otwórz katalog `/home/user/RadioMaster` w Android Studio jako projekt Gradle.
-3. Zsynchronizuj Gradle i uruchom moduł `app` na emulatorze lub urządzeniu z API 24+.
-
-Brak kluczy API — aplikacja korzysta z publicznego API radio-browser.info (brak wymogu rejestracji, honoruj ich warunki użytkowania).
-
-## Struktura katalogów (wybrane)
-
-```
 app/src/main/java/com/radiomaster/app/
-  data/           # warstwa danych (remote, local, repository)
-  domain/         # modele, interfejsy repozytoriów, case'y użycia
-  di/             # moduły Hilt (DI)
-  media/          # odtwarzanie (ExoPlayer), serwis foreground, Android Auto
-  presentation/   # App (Hilt Application), MainActivity
-  ui/
-    component/    # StationCard, SearchBar, CategoryChip
-    navigation/   # trasy, AppNavGraph, dolny pasek nawigacji
-    screens/      # Splash, Onboarding, Home, Search, Szczegóły, Ulubione, Ostatnie, Ustawienia, Język
-    theme/        # Motyw Material 3, kolory, typografia
+  data/local/        Room: stations (cache), favorites, history
+  data/remote/       Retrofit + OkHttp + Gson, klient radio-browser.info z fallbackiem na mirrory
+  data/repository/   implementacje repozytoriów (sieć lustrzanie zapisywana do cache)
+  di/AppGraph.kt     ręczny graf zależności (by lazy), bez frameworka DI
+  domain/model/      Station, MapPosition, Genre, Country, BrowseIds
+  domain/repository/ interfejsy: StationRepository, LocalRepository, SettingsRepository
+  domain/usecase/    StationBrowser — jeden resolver list dla telefonu i dla Auto
+  locale/AppLocale   per-app locales (API 33+) + createConfigurationContext (26–32)
+  media/             RadioPlayback (ExoPlayer), MediaItems (id/metadane), RadioMediaSessionService
+  presentation/      MainActivity, AppRoot (Scaffold + NavHost), screens/, components/, viewmodel/
+  ui/globe/          dekodowanie world_land.json → Path
+  ui/theme/          Material 3 (własne schematy, dark/light)
 ```
 
-## Licencje i źródła
+Warstwy są kierunkowe: `presentation → domain ← data`; `media` korzysta z `domain/usecase`, więc telefon i samochód czytają te same dane z tego samego kodu. Widoki nie znają Retrofitu ani Rooma.
 
-- Dane o stacjach: [radio-browser.info](https://www.radio-browser.info/) (własność ich właścicieli).
-- Biblioteki open source na licencjach Apache 2.0 / MIT / BSD (szczegóły po kompilacji w sekcji licencji Androida).
+### Kluczowe wersje (stan na 2026-11-21)
+
+| Element | Wersja | Uwaga |
+|---|---|---|
+| Gradle | 9.9.2 | AGP 9.5 wymaga ≥ 9.6 |
+| Android Gradle Plugin | 9.5.0 | latest stable |
+| compileSdk / targetSdk | 37 | max API dla AGP 9.5 |
+| minSdk | 26 | nasz wybór (media3 wymaga 23, automotive 28) |
+| Kotlin | 2.4.21 | tylko jako `org.jetbrains.kotlin.plugin.compose`; `kotlin-android` nie jest stosowany (AGP 9 ma wbudowany Kotlin) |
+| KSP | 2.3.14 | tylko Room |
+| Compose BOM | 2026.11.01 | Compose 1.13.0, Material 3 1.5.0 |
+| Activity Compose | 1.13.0 | |
+| Lifecycle | 2.11.1 | `collectAsStateWithLifecycle` + `lifecycle-viewmodel-compose`; bez `repeatOnLifecycle` |
+| Navigation Compose | 2.10.2 | |
+| Room | 2.8.5 | |
+| DataStore | 1.3.0 | preferencje ustawień |
+| Media3 | 1.11.1 | `exoplayer`, `session`, `datasource` (bez `media3-ui`) |
+| Retrofit / OkHttp / Gson | 3.0.0 / 5.5.1 / 2.15.0 | |
+| kotlinx-coroutines | 1.11.0 | |
+
+Brak Hilt, Coil i Timber — patrz „Decyzje” poniżej.
+
+## Decyzje, które warto znać przy review
+
+1. **Zero frameworków DI i obrazów.** `AppGraph` ma pięć obiektów; `AppGraph.radioPlayback` jest `by lazy`, więc serwis Auto i ekrany dostają **tę samą** instancję `ExoPlayera`. Aplikacja nic nie loguje (bez Timbera) — awarie są albo naprawiane (fallback na inny mirror), albo pokazywane w UI, a `runCatching` stoi tylko tam, gdzie porażka nie ma znaczenia dla słuchacza (raport kliknięcia, zapis historii). Loga stacji nie są wczytywane z sieci, bo nie ma biblioteki obrazowej; miejsce logo zajmuje kafelek z deterministycznym gradientem (`TilePalette`: sześć barw, indeks liczony z hashu uuid).
