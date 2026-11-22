@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.radiomaster.app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- ExoPlayer keeps a wake lock while buffering a live stream (C.WAKE_MODE_NETWORK). -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- Present so the app is discoverable on car displays, but not required: the same APK
+         runs on phones. -->
+    <uses-feature
+        android:name="android.hardware.type.automotive"
+        android:required="false" />
+
     <application
-        android:name=".presentation.App"
+        android:name=".RadioMasterApplication"
         android:allowBackup="true"
-        android:fullBackupContent="@xml/backup_rules"
-        android:dataExtractionRules="@xml/data_extraction_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@theme/Theme.RadioMaster"
-        android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        android:theme="@style/Theme.RadioMaster">
+
+        <!-- Declares the app as a media app for Android Auto / Android Automotive OS. -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+        <!-- Monochrome icon shown on the media cards / attribution area of the car UI. -->
+        <meta-data
+            android:name="androidx.car.app.TintableAttributionIcon"
+            android:resource="@drawable/ic_radio" />
 
         <activity
             android:name=".presentation.MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode|density|keyboard|keyboardHidden|navigation"
             android:exported="true"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:configChanges="orientation|screenSize|uiMode|screenLayout|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,25 +47,19 @@
             </intent-filter>
         </activity>
 
-        <!-- Usługa multimediów dla Android Auto i Android Automotive -->
+        <!-- One session for the whole app: it provides the notification / lock-screen controls
+             and the browse tree (globe categories, favorites, recents, search) that
+             Android Auto and AAOS render natively. -->
         <service
-            android:name=".media.RadioSessionService"
+            android:name=".media.RadioMediaSessionService"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback"
-            android:permission="android.permission.BIND_MEDIA_BROWSER_SERVICE">
+            android:foregroundServiceType="mediaPlayback">
             <intent-filter>
+                <action android:name="androidx.media3.session.MediaLibraryService" />
+                <!-- Legacy MediaBrowserCompat clients: this is the action Android Auto uses. -->
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
-            <meta-data
-                android:name="com.google.android.gms.car.application"
-                android:resource="@xml/automotive_app_desc" />
         </service>
-
-        <service
-            android:name=".media.PlayerForegroundService"
-            android:exported="false"
-            android:foregroundServiceType="mediaPlayback" />
-
     </application>
 
 </manifest>
